@@ -16,20 +16,20 @@
  *
  */
 
-if (typeof Proxy === "undefined") {
+if (typeof Proxy === "undefined" || typeof Symbol === "undefined") {
     throw new Error(
-        "[mobx] MobX 5+ requires Proxy objects. If your environment doesn't support Proxy objects, please downgrade to MobX 4."
+        "[mobx] MobX 5+ requires Proxy and Symbol objects. If your environment doesn't support Symbol or Proxy objects, please downgrade to MobX 4. For React Native Android, consider upgrading JSCore."
     )
 }
 
-declare var window: any
+declare const window: any
 try {
     // define process.env if needed
     // if this is not a production build in the first place
     // (in which case the expression below would be substituted with 'production')
     process.env.NODE_ENV
 } catch (e) {
-    var g = typeof window !== "undefined" ? window : global
+    const g = typeof window !== "undefined" ? window : global
     if (typeof process === "undefined") g.process = {}
     g.process.env = {}
 }
@@ -38,10 +38,12 @@ try {
     function testCodeMinification() {}
     if (
         testCodeMinification.name !== "testCodeMinification" &&
-        process.env.NODE_ENV !== "production"
+        process.env.NODE_ENV !== "production" &&
+        process.env.IGNORE_MOBX_MINIFY_WARNING !== "true"
     ) {
         console.warn(
-            "[mobx] you are running a minified build, but 'process.env.NODE_ENV' was not set to 'production' in your bundler. This results in an unnecessarily large and slow bundle"
+            // Template literal(backtick) is used for fix issue with rollup-plugin-commonjs https://github.com/rollup/rollup-plugin-commonjs/issues/344
+            `[mobx] you are running a minified build, but 'process.env.NODE_ENV' was not set to 'production' in your bundler. This results in an unnecessarily large and slow bundle`
         )
     }
 })()
@@ -88,6 +90,11 @@ export {
     IMapDidChange,
     isObservableMap,
     IObservableMapInitialValues,
+    ObservableSet,
+    isObservableSet,
+    ISetDidChange,
+    ISetWillChange,
+    IObservableSetInitialValues,
     transaction,
     observable,
     IObservableFactory,
@@ -102,6 +109,7 @@ export {
     observe,
     intercept,
     autorun,
+    IAutorunOptions,
     reaction,
     IReactionOptions,
     when,
@@ -134,6 +142,7 @@ export {
     getAtom,
     getAdministration as _getAdministration,
     allowStateChanges as _allowStateChanges,
+    allowStateChangesInsideComputed as _allowStateChangesInsideComputed,
     Lambda,
     isArrayLike,
     $mobx,
@@ -146,7 +155,7 @@ export {
 // Devtools support
 import { spy, getDebugName, $mobx } from "./internal"
 
-declare var __MOBX_DEVTOOLS_GLOBAL_HOOK__: { injectMobx: ((any) => void) }
+declare const __MOBX_DEVTOOLS_GLOBAL_HOOK__: { injectMobx: (any) => void }
 if (typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === "object") {
     // See: https://github.com/andykog/mobx-devtools/
     __MOBX_DEVTOOLS_GLOBAL_HOOK__.injectMobx({

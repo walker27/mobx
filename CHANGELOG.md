@@ -1,3 +1,109 @@
+# 5.9.4 / 4.9.4
+
+* Allow symbol keys in `ObservableMap`, see [#1930](https://github.com/mobxjs/mobx/pull/1930) by [pimterry](https://github.com/pimterry)
+* Fixed type definitions of `toStringTag` for Maps and Sets, see [#1929](https://github.com/mobxjs/mobx/pull/1929) by [lennerd](https://github.com/mobxjs/mobx/pull/1929)
+
+# 4.9.3
+
+* Fixed `observable.set` compatibility with IE 11, see [#1917](https://github.com/mobxjs/mobx/pull/1917) by [kalmi](https://github.com/kalmi)
+
+# 4.9.2
+
+* Fixed regression [#1878](https://github.com/mobxjs/mobx/issues/1878), accidental use of `Symbol` breaking Internet Explorer / React Native compatibility.
+
+# 4.9.1
+
+* Fixed regression in `toJS`: observable maps were not properly serialized. Fixes [#1875](https://github.com/mobxjs/mobx/issues/1875)
+
+# 5.9.0 / 4.9.0
+
+**Features**
+
+* Introduced support for observable sets! Through [#1592](https://github.com/mobxjs/mobx/pull/1592) by [@newraina](https://github.com/newraina)
+* `observable.box` now accepts an `equals` option, to be able to pass a custom comparision function. Through [#1862](https://github.com/mobxjs/mobx/pull/1862), [#1874](https://github.com/mobxjs/mobx/pull/1874) by [@fi3ework](https://github.com/fi3ework). Fixes [#1580](https://github.com/mobxjs/mobx/issues/1580)
+* Improved logging of reactions; if an action throws an exception, errors in reactions that react to that are only logged as warnings. Fixes [#1836](https://github.com/mobxjs/mobx/issues/1836)
+
+**Fixes**
+
+* Improved typings for `flow`, see [#1827](https://github.com/mobxjs/mobx/pull/1827) by [@xaviergonz](https://github.com/xaviergonz)
+* Don't allow subclassing map, fixes [#1858](https://github.com/mobxjs/mobx/issues/1858)
+* Fixed `trace(true)` not being able to handle multi-line comments in traced function. Fixes [#1850](https://github.com/mobxjs/mobx/issues/1850)
+* `@computed` now introduces non-configurable properties, to fail fast on incorrect inheritance or property deletion. Fixes [#1867](https://github.com/mobxjs/mobx/issues/1867)
+* The options `enforceActions` and `isolateGlobalState` now work correctly when used together. Fixes [#1869](https://github.com/mobxjs/mobx/issues/1869)
+
+# 5.8.0 / 4.8.0
+
+* MobX now requires TypeScript 3 (this was already the case in 5.7.0, but in this version the difference is actually noticeable in the typings). 
+* Fixed array dehancer sometimes skipping. Fixes [#1839](https://github.com/mobxjs/mobx/issues/1839) through [#1841](https://github.com/mobxjs/mobx/pull/1841) by [k-g-a](https://github.com/k-g-a) 
+* Fixed issue where webpack 4 wouldn't use the ESM module [#1834](https://github.com/mobxjs/mobx/pull/1834) by [mrtnbroder](https://github.com/mrtnbroder)
+* Improved type inference for `flow` in TypeScript 3. Fixes [#1816](https://github.com/mobxjs/mobx/issue/1816) through [#1825](https://github.com/mobxjs/mobx/pull/1825) by [ismailhabib](https://github.com/ismailhabib)
+* Introduced support for global environment variable `IGNORE_MOBX_MINIFIY_WARNING=true` to skip the built-in minification warning. See [#1835](https://github.com/mobxjs/mobx/pull/1835) by [fi3ework](https://github.com/fi3ework)
+* Fixed onBecome(Un)Observed dispoer cleanup. Fixes [#1537](https://github.com/mobxjs/mobx/issues/1537) through [#1833](https://github.com/mobxjs/mobx/pull/1833) by [fi3ework](https://github.com/fi3ework)
+
+# 5.7.1 / 4.7.1
+* Fixed [#1839](https://github.com/mobxjs/mobx/issues/1839), ObservableArrayAdministration.dehanceValues does not dehance last value.
+
+# 5.7.0 / 4.7.0
+
+* Upgraded typings to TypeScript 3
+* Fixed [#1742](https://github.com/mobxjs/mobx/issues/1742), change detection fails when multiple mobx instances were active.
+* Fixed [#1624](https://github.com/mobxjs/mobx/issues/1624), use built-in flow types for iterators
+* Fixed [#1777](https://github.com/mobxjs/mobx/issues/1777) through [#1826](https://github.com/mobxjs/mobx/pull/1826), stack overflow exception, in development mode, when using `@computed` on a React component. The MobX 5 behavior here has been reverted to the MobX 4 behavior.
+
+
+# 5.6.0 / 4.6.0
+
+* `keepAlive` has become smarter and won't recomputed computed values that are kept alive, as long as they aren't read. Implements [#1534](https://github.com/mobxjs/mobx/issues/1534)
+* Fixed [#1796](https://github.com/mobxjs/mobx/issues/1796), undeleting a property that had an initial value of `undefined` was undetected
+* Improved Flow typings, see [#1794](https://github.com/mobxjs/mobx/pull/1794) and [#1786](https://github.com/mobxjs/mobx/pull/1786)
+
+# 5.5.2 / 4.5.2
+
+* Fixed bug in `toJS` not handling `null` values correctly. Fixes [#1557](https://github.com/mobxjs/mobx/issues/1557) through [#1783](https://github.com/mobxjs/mobx/pull/1783) by [@wangyiz4262](https://github.com/wangyiz4262)
+
+# 5.5.1 / 4.5.1
+
+* `toJS` now has a `recurseEverything` everything option, that even detects and converts observable objects that are "behind" non-observable objects. See [#1699](https://github.com/mobxjs/mobx/pull/1699) by [wangyiz4262](https://github.com/wangyiz4262)
+* Added flow typings form `comparer`, see [#1751](https://github.com/mobxjs/mobx/pull/1752) by [pdong](https://github.com/pdong)
+* Update flow typings for configuration options, [#1772](https://github.com/mobxjs/mobx/pull/1772) by [alexandersorokin](https://github.com/alexandersorokin)
+
+# 5.5.0 / 4.5.0
+
+(Minor version of `5` was bumped significantly to make the number better correlate together :-))
+
+* Fixed [#1740](https://github.com/mobxjs/mobx/issues/1740): combining decorators and `extendObservable` in a class constructor caused errors to be thrown
+* Fixed [#1739](https://github.com/mobxjs/mobx/issues/1740):
+   * Proxies: `delete`-ing a property was not always picked up by the reactivity system
+   * Non-proxies: `remove()`-ing a property was not always picked up by the `has()` and `get()` utilities
+   * `has` now returns `true` for computed fields
+   * `get` now returns a value for computed fields
+* Introduced `_allowStateChangeInsideComputed`. Don't use it :-).
+* MobX is now transpiled using babel 7
+
+# 5.1.2 / 4.4.2
+
+* Fixed [#1650](https://github.com/mobxjs/mobx/issues/1650), decorating fields with the name `toString` does not behave correctly.
+
+# 5.1.1 / 4.4.1
+
+* Improved typings of `decorate`, see [#1711](https://github.com/mobxjs/mobx/pull/1711) by [makepost](https://github.com/makepost)
+
+# 5.1.0 / 4.4.0
+
+* Improved handling of multiple MobX instances. MobX will no longer complain about being loaded multiple times (one should still prevent it though, to prevent blowing up bundle size!), but merge internal state by default. If multiple MobX versions need to be loaded, call `configure({ isolateGlobalState: true })`. Note that this means that observables from the different MobX instances won't cooperate. Fixes [#1681](https://github.com/mobxjs/mobx/issues/1681), [#1082](https://github.com/mobxjs/mobx/issues/1082)
+* `enforceActions` options now supports the values: `"never"`, `"observed"` and `"always"` to make the behavior more clear. Fixes [#1680](https://github.com/mobxjs/mobx/issues/1680), [#1473](https://github.com/mobxjs/mobx/issues/1473)
+
+# 5.0.5
+
+* Fixed [#1667](https://github.com/mobxjs/mobx/issues/1667): creating a large array could result in undefined items (MobX 4.* was not affected)
+
+# 4.3.2 / 5.0.4
+
+* Fixed [#1685](https://github.com/mobxjs/mobx/issues/1685): expose `IAutorunOptions`
+* `decorate` now can apply multiple decorators, by accepting an array and applying them right to left: `decorate(Todo, { title: [serializable(primitive), persist('object'), observable] })`. By [@ramybenaroya](https://github.com/ramybenaroya) through [#1691](https://github.com/mobxjs/mobx/pull/1691) and [#1686](https://github.com/mobxjs/mobx/pull/1686)
+* Improved typings of `flow` so that it accepts async generators. By [@dannsam](https://github.com/dannsam) through [#1656](https://github.com/mobxjs/mobx/pull/1656) and [#1655](https://github.com/mobxjs/mobx/pull/1655)
+* `keys()` now also supports arrays. Fixes [#1600](https://github.com/mobxjs/mobx/pull/1600) through [#1601](https://github.com/mobxjs/mobx/pull/1601) by [@nunocastromartins](https://github.com/nunocastromartins)
+
 # 5.0.3
 
 * Fixed issue where it was no longer possible to define custom properties on observable arrays
@@ -61,6 +167,7 @@ _Note June 7th, 2018:_ Both issues are already in Jest master and should be rele
   * Don't `slice()` arrays when passing them to external libraries. (Note you still shouldn't pass observable data structures to non-`observer` React components, which is an orthogonal concept)
   * You could replace observable maps with observable objects if you are only using string-based keys.
 * Don't call the `reverse` or `sort` operations directly on observableArray's anymore, as it's behavior slightly differed from the built-in implementations of those methods. Instead use `observableArray.slice().sort()` to perform the sort on a copy. This gives no additional performance overhead compared to MobX 4. (The reason behind this is that built-in `sort` updates the array in place, but the observable array implementation always performed the sort on a defensive copy, and this change makes that explicit).
+* you may remove usages of `isArrayLike()` since `Array.isArray()` will now return true for observable arrays
 
 
 ### API's that have been dropped
@@ -659,6 +766,12 @@ If you still want to use the old behavior, this can be achieved by running `mobx
 Since this behavior is probably not used outside Mendix, it has been deprecated immediately, so if you rely on this feature, please report in #621, so that it can be undeprecated if there is no more elegant solution.
 
 See [#621](https://github.com/mobxjs/mobx/issues/621)
+
+### Using the @action decorator inside individual objects
+
+Don't use the `@action` decorator on an individual object that you pass to `observable()` or `extendObservable()`. If you have code that looks like `observable({ @action f: () => {})`, you should change it to `observable({ f: action(() => {})`.
+
+Whether or not this was ever a good idea is debatable, but it stopped working in this version. If you're using classes, it's a non-issue.
 
 ### Other changes
 

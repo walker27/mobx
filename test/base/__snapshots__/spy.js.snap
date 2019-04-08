@@ -33,9 +33,43 @@ Array [
   },
   Object {
     "error": "Oops",
-    "message": "[mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[autorun]",
+    "message": "[mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: 'Reaction[autorun]'",
     "name": "autorun",
     "type": "error",
+  },
+  Object {
+    "spyReportEnd": true,
+  },
+  Object {
+    "spyReportEnd": true,
+  },
+  Object {
+    "arguments": Array [
+      4,
+    ],
+    "name": "setX",
+    "spyReportStart": true,
+    "type": "action",
+  },
+  Object {
+    "key": "x",
+    "name": "ObservableObject@1",
+    "newValue": 4,
+    "oldValue": 3,
+    "spyReportStart": true,
+    "type": "update",
+  },
+  Object {
+    "spyReportEnd": true,
+  },
+  Object {
+    "name": "ObservableObject@1.y",
+    "type": "compute",
+  },
+  Object {
+    "name": "autorun",
+    "spyReportStart": true,
+    "type": "reaction",
   },
   Object {
     "spyReportEnd": true,

@@ -16,14 +16,14 @@ export interface IAction {
     isMobxAction: boolean
 }
 
-export function createAction(actionName: string, fn: Function): Function & IAction {
+export function createAction(actionName: string, fn: Function, ref?: Object): Function & IAction {
     if (process.env.NODE_ENV !== "production") {
         invariant(typeof fn === "function", "`action` can only be invoked on functions")
         if (typeof actionName !== "string" || !actionName)
             fail(`actions should have valid names, got: '${actionName}'`)
     }
     const res = function() {
-        return executeAction(actionName, fn, this, arguments)
+        return executeAction(actionName, fn, ref || this, arguments)
     }
     ;(res as any).isMobxAction = true
     return res as any
@@ -31,10 +31,19 @@ export function createAction(actionName: string, fn: Function): Function & IActi
 
 export function executeAction(actionName: string, fn: Function, scope?: any, args?: IArguments) {
     const runInfo = startAction(actionName, fn, scope, args)
+    let shouldSupressReactionError = true
     try {
-        return fn.apply(scope, args)
+        const res = fn.apply(scope, args)
+        shouldSupressReactionError = false
+        return res
     } finally {
-        endAction(runInfo)
+        if (shouldSupressReactionError) {
+            globalState.suppressReactionErrors = shouldSupressReactionError
+            endAction(runInfo)
+            globalState.suppressReactionErrors = false
+        } else {
+            endAction(runInfo)
+        }
     }
 }
 
@@ -103,4 +112,16 @@ export function allowStateChangesStart(allowStateChanges: boolean) {
 
 export function allowStateChangesEnd(prev: boolean) {
     globalState.allowStateChanges = prev
+}
+
+export function allowStateChangesInsideComputed<T>(func: () => T): T {
+    const prev = globalState.computationDepth
+    globalState.computationDepth = 0
+    let res: T
+    try {
+        res = func()
+    } finally {
+        globalState.computationDepth = prev
+    }
+    return res
 }

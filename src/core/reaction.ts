@@ -1,5 +1,6 @@
 import {
     $mobx,
+    fail,
     IDerivation,
     IDerivationState,
     IObservable,
@@ -118,6 +119,9 @@ export class Reaction implements IDerivation, IReactionPublic {
     }
 
     track(fn: () => void) {
+        if (this.isDisposed) {
+            fail("Reaction already disposed")
+        }
         startBatch()
         const notify = isSpyEnabled()
         let startTime
@@ -153,9 +157,13 @@ export class Reaction implements IDerivation, IReactionPublic {
 
         if (globalState.disableErrorBoundaries) throw error
 
-        const message = `[mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: '${this}`
-        console.error(message, error)
-        /** If debugging brought you here, please, read the above message :-). Tnx! */
+        const message = `[mobx] Encountered an uncaught exception that was thrown by a reaction or observer component, in: '${this}'`
+        if (globalState.suppressReactionErrors) {
+            console.warn(`[mobx] (error in reaction '${this.name}' suppressed, fix error of causing action below)`) // prettier-ignore
+        } else {
+            console.error(message, error)
+            /** If debugging brought you here, please, read the above message :-). Tnx! */
+        }
 
         if (isSpyEnabled()) {
             spyReport({
@@ -182,7 +190,7 @@ export class Reaction implements IDerivation, IReactionPublic {
     }
 
     getDisposer(): IReactionDisposer {
-        const r = this.dispose.bind(this)
+        const r = this.dispose.bind(this) as IReactionDisposer
         r[$mobx] = this
         return r
     }

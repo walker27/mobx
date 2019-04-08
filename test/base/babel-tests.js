@@ -410,13 +410,13 @@ test("custom action decorator on field (babel)", function() {
 })
 
 test("267 (babel) should be possible to declare properties observable outside strict mode", () => {
-    configure({ enforceActions: true })
+    configure({ enforceActions: "observed" })
 
     class Store {
         @observable timer
     }
 
-    configure({ enforceActions: false })
+    configure({ enforceActions: "never" })
 })
 
 test("288 atom not detected for object property", () => {
@@ -574,7 +574,7 @@ test("enumerability", () => {
         @computed
         get b() {
             return this.a
-        } // non-enumerable, on proto
+        } // non-enumerable, (and, ideally, on proto)
         @action
         m() {} // non-enumerable, on proto
         @action m2 = () => {} // non-enumerable, on self
@@ -587,17 +587,15 @@ test("enumerability", () => {
     let props = []
     for (var key in a) props.push(key)
 
-    expect(ownProps).toEqual(
-        [
-            // should have a, not supported yet in babel...
-        ]
-    )
+    expect(ownProps).toEqual([
+        // should have a, not supported yet in babel...
+    ])
 
     expect(props).toEqual(["a", "a2"])
 
     expect("a" in a).toBe(true)
-    expect(a.hasOwnProperty("a")).toBe(false) // true would better..
-    expect(a.hasOwnProperty("b")).toBe(false)
+    expect(a.hasOwnProperty("a")).toBe(false)
+    expect(a.hasOwnProperty("b")).toBe(false) // true would be more consistent, see below
     expect(a.hasOwnProperty("m")).toBe(false)
     expect(a.hasOwnProperty("m2")).toBe(true)
 
@@ -624,7 +622,7 @@ test("enumerability", () => {
     expect("a" in a).toBe(true)
     expect(a.hasOwnProperty("a")).toBe(true)
     expect(a.hasOwnProperty("a2")).toBe(true)
-    expect(a.hasOwnProperty("b")).toBe(false) // true would also be ok-ish. see: #1398
+    expect(a.hasOwnProperty("b")).toBe(true) // true would better.. but, #1777
     expect(a.hasOwnProperty("m")).toBe(false)
     expect(a.hasOwnProperty("m2")).toBe(true)
 })
@@ -636,7 +634,7 @@ test("enumerability - workaround", () => {
         @computed
         get b() {
             return this.a
-        } // non-enumerable, on proto
+        } // non-enumerable, (and, ideally, on proto)
         @action
         m() {} // non-enumerable, on proto
         @action m2 = () => {} // non-enumerable, on self
@@ -663,7 +661,7 @@ test("enumerability - workaround", () => {
     expect("a" in a).toBe(true)
     expect(a.hasOwnProperty("a")).toBe(true)
     expect(a.hasOwnProperty("a2")).toBe(true)
-    expect(a.hasOwnProperty("b")).toBe(false) // true would also be ok-ish. see: #1398
+    expect(a.hasOwnProperty("b")).toBe(true) // ideally, false, but #1777
     expect(a.hasOwnProperty("m")).toBe(false)
     expect(a.hasOwnProperty("m2")).toBe(true)
 })
@@ -701,11 +699,9 @@ test("verify object assign (babel)", () => {
     }
 
     const todo = new Todo()
-    expect(Object.assign({}, todo)).toEqual(
-        {
-            //		Should be:	title: "test"!
-        }
-    )
+    expect(Object.assign({}, todo)).toEqual({
+        //		Should be:	title: "test"!
+    })
 
     todo.title // lazy initialization :'(
 
@@ -1093,7 +1089,7 @@ test("actions are reassignable", () => {
 test("it should support asyncAction (babel)", async () => {
     const values = []
 
-    mobx.configure({ enforceActions: true })
+    mobx.configure({ enforceActions: "observed" })
 
     class X {
         @observable a = 1
@@ -1196,4 +1192,32 @@ test("computed setter problem - 2", () => {
     c.fullName = "Michel Weststrate"
     expect(c.firstName).toBe("Michel")
     expect(c.lastName).toBe("Weststrate")
+})
+
+test("#1740, combining extendObservable & decorators", () => {
+    class AppState {
+        constructor(id) {
+            extendObservable(this, {
+                id
+            })
+            expect(this.foo).toBe(id)
+        }
+
+        @computed
+        get foo() {
+            return this.id
+        }
+    }
+
+    let app = new AppState(1)
+    expect(app.id).toBe(1)
+    expect(app.foo).toBe(1)
+    expect(isObservableProp(app, "id")).toBe(true)
+    expect(isComputedProp(app, "foo")).toBe(true)
+
+    app = new AppState(2)
+    expect(app.id).toBe(2)
+    expect(app.foo).toBe(2)
+    expect(isObservableProp(app, "id")).toBe(true)
+    expect(isComputedProp(app, "foo")).toBe(true)
 })

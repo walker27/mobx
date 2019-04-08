@@ -40,16 +40,20 @@ export interface IActionFactory {
     <T extends Function>(name: string, fn: T): T & IAction
 
     // named decorator
-    (customName: string): (target: Object, key: string, baseDescriptor?: PropertyDescriptor) => void
+    (customName: string): (
+        target: Object,
+        key: string | symbol,
+        baseDescriptor?: PropertyDescriptor
+    ) => void
 
     // unnamed decorator
-    (target: Object, propertyKey: string, descriptor?: PropertyDescriptor): void
+    (target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void
 
     // @action.bound decorator
-    bound(target: Object, propertyKey: string, descriptor?: PropertyDescriptor): void
+    bound(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void
 }
 
-export var action: IActionFactory = function action(arg1, arg2?, arg3?, arg4?): any {
+export const action: IActionFactory = function action(arg1, arg2?, arg3?, arg4?): any {
     // action(fn() {})
     if (arguments.length === 1 && typeof arg1 === "function")
         return createAction(arg1.name || "<unnamed action>", arg1)
@@ -62,9 +66,9 @@ export var action: IActionFactory = function action(arg1, arg2?, arg3?, arg4?): 
     // @action fn() {}
     if (arg4 === true) {
         // apply to instance immediately
-        addHiddenProp(arg1, arg2, createAction(arg1.name || arg2, arg3.value))
+        addHiddenProp(arg1, arg2, createAction(arg1.name || arg2, arg3.value, this))
     } else {
-        return namedActionDecorator(arg2).apply(null, arguments)
+        return namedActionDecorator(arg2).apply(null, arguments as any)
     }
 } as any
 
